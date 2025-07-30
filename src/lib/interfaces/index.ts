@@ -1,19 +1,19 @@
-interface IClipData {
-    id: string
-    content: string
-    is_pin: boolean
-}
-
-interface IClipProps {
-    data: IClipData
-}
-
 interface IClip {
     id: string
     content: string
-    created_at?: string
+    created_at: string
     is_pin: boolean
-    [key: string]: any
+}
+
+interface IUser {
+    id: string
+    email: string
+}
+
+interface IGroupedClips { 
+    date: string,
+    clips: OptionalClip[]
+
 }
 
 interface IClipStore {
@@ -28,9 +28,4 @@ interface IUserStore {
     user: IUser | null
     setUser: (user: IUser) => void
     clearUser: () => void
-}
-
-interface IUser {
-    id: string
-    email: string
 }

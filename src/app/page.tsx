@@ -1,6 +1,6 @@
 "use client"
-import { useState } from 'react'
-import { supabase } from '@/utils/supabaseClient'
+import { useEffect, useState } from 'react'
+import { getSession, supabase } from '@/utils/supabaseClient'
 import { useRouter } from 'next/navigation'
 
 export default function Home() {
@@ -26,6 +26,15 @@ export default function Home() {
   //   if (error) alert(error.message)
   //   else alert('Check your email to confirm signup!')
   // }
+
+  useEffect(() => {
+    getSession().then((isLoggedIn) => {
+      if (isLoggedIn) {
+        router.push('/board')
+      }
+    })
+  }, [router])
+  
 
   return (
     <div className='h-screen flex items-center justify-center'>

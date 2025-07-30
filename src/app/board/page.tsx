@@ -1,41 +1,33 @@
 "use client"
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { supabase } from '@/utils/supabaseClient'
 import { clipStore, userStore } from '@/store'
 import { appClipData, getClipsData, getUserData } from '@/services'
 import Clips from '@/components/Clips'
-import { LogoutIcon } from '../icons'
+import Header from '@/components/Header'
 
 
 export default function Board() {
   
     const router = useRouter()
     const { setClips, addClip } = clipStore()
-    const { user, setUser } = userStore()
-
-    const logoutUser = async () => {
-        const { error } = await supabase.auth.signOut()
-        if (error) {
-            console.error('Error logging out:', error)
-        } else {
-            router.push('/')
-        }
-    }
+    const { setUser } = userStore()
 
     useEffect(() => {
         
+        // TODO: Move this logic to a utility function
         const getUser = async () => {
-            const userData = await getUserData()
+            const userData: IUser | null = await getUserData()
             if (!userData) {
                 router.push('/')
                 return
             } 
-            setUser(userData as any)
+            setUser(userData)
             getClipsData(setClips)
         }
 
-        const handlePaste = async (event: any) => {
+        // TODO: Move this logic to a utility function
+        const handlePaste = async (event: KeyboardEvent) => {
             if (event.ctrlKey && event.key === 'v') {
                 event.preventDefault()
                 const clipboardData = await navigator.clipboard.readText()
@@ -56,29 +48,10 @@ export default function Board() {
 
     return (
         <div className='bg-gray-100'>
-        <div className='mx-auto w-full lg:w-2/3 pt-5 px-4'>
-            <div className='bg-gray-800 p-4 text-white shadow-xl rounded-full mb-4'>
-                <div className='flex items-center'>
-                    <div className='flex-1'></div>
-                    <div className='flex-auto'>
-                        <h1 className='text-xl lg:text-3xl text-center'>Clipboard</h1>
-                        {
-                            user && <p className='text-xs text-center mt-1'>Welcome, {user.email}</p>
-                        }
-                    </div>
-                    <div className='flex-1'>
-                        <div className='flex items-center justify-end space-x-4'>
-                            <button className='text-white hover:cursor-pointer px-5' onClick={logoutUser}>
-                                <LogoutIcon />
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div className='p-5'>
+            <div className='mx-auto w-full lg:w-2/3 pt-5 px-4'>
+                <Header />
                 <Clips />
             </div>
-        </div>
         </div>
     )
 }

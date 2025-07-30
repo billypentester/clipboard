@@ -1,12 +1,10 @@
-import { CopyIcon, DeleteIcon, PinIcon } from "@/app/icons"
+"use client";
+import { DeleteIcon, PinIcon } from "@/icons"
 import { deleteClipData, pinClipData } from "@/services";
 import { clipStore } from "@/store";
 import { copyClipData } from "@/utils/CopyClip";
 import EmptyClip from "./EmptyClip";
-
-function isPin(is_pin: boolean) {
-    return is_pin ? 'text-blue-800' : '';
-}
+import { formatDate } from "@/utils/dateFormatter";
 
 export default function Clips() {
 
@@ -18,15 +16,10 @@ export default function Clips() {
         )
     }
 
-    function formatDate(dateString: string) {
-        const date = new Date(dateString);
-        const options: Intl.DateTimeFormatOptions = { month: 'long', day: 'numeric', year: 'numeric' };
-        return date.toLocaleDateString('en-US', options);
-    }
-
-    const groupedData: any = clips.reduce((acc: any, clip: any) => {
+    // TODO: Move this logic to a utility function
+    const groupedData = clips.reduce((acc: IGroupedClips[], clip: IClip) => {
         const date = new Date(clip.created_at).toLocaleDateString();
-        const existingGroup: any = acc.find((item: any) => item.date === date);
+        const existingGroup = acc.find((item) => item.date === date);
         if (existingGroup) {
             existingGroup.clips.push({ id: clip.id, content: clip.content, is_pin: clip.is_pin });
         } else {
@@ -36,29 +29,32 @@ export default function Clips() {
     }, []);
 
     return (
-        <ul>
+        <ul className="p-5">
             {
-                groupedData.map((clip: any, index: number) => {
+                groupedData.map((clip: IGroupedClips, index: number) => {
                     return (
-                        <li key={index} className={`${clip.length == index + 1 ? "mb-10" : ""}`}>
+                        <li key={index} className="mb-10">
                             <div className="mb-5">
                                 <h2 className='text-xl font-semibold'>{formatDate(clip.date)}</h2>
                             </div>  
                             {
-                                clip.clips.map((clip: any, index: number) => {
+                                clip.clips.map((clip: OptionalClip, index: number) => {
                                     return (
-                                        <div key={index} className="shadow-xs border border-gray-400 p-3 mb-3">
-                                            <div className='h-16'>
+                                        <div key={index} id={`clip-${index}`} className="relative cursor-pointer overflow-hidden shadow-xs border border-gray-300 rounded-md bg-gray-200 p-3 mb-3" onClick={(e) => copyClipData(e, clip.content)}>
+                                            <div className='h-20'>
                                                 <p>{clip.content}</p>
                                             </div>  
-                                            <div className='flex justify-end gap-0 text-gray-700'>
-                                                <button className='mt-2 border border-gray-400 px-2 py-1 hover:cursor-pointer hover:text-green-800' onClick={() => copyClipData(clip.content)}>
-                                                    <CopyIcon />
-                                                </button>
-                                                <button className='mt-2 ml-2 border border-gray-400 px-2 py-1 hover:cursor-pointer hover:text-red-800' onClick={() => deleteClipData(clip.id, deleteClip)}>
+                                            <div className='flex justify-end gap-2'>
+                                                <button className='custom-btn' onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    deleteClipData(clip.id, deleteClip)
+                                                }}>
                                                     <DeleteIcon />
                                                 </button>
-                                                <button className={`mt-2 ml-2 border border-gray-400 px-2 py-1 hover:cursor-pointer hover:text-blue-800 ${isPin(clip.is_pin)}`} onClick={() => pinClipData(clip.id, clip.is_pin, pinClip)}>
+                                                <button className={`custom-btn ${clip.is_pin ? '!text-cyan-400' : ''}`} onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    pinClipData(clip.id, clip.is_pin, pinClip)
+                                                }}>
                                                     <PinIcon />
                                                 </button>
                                             </div>

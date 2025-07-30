@@ -2,7 +2,7 @@ import { supabase } from '@/utils/supabaseClient'
 import { userStore } from '@/store'
 
 const getClipsData = async (setClips: (data: IClip[]) => void) => {
-    const { data, error } = await supabase.from('clipboard').select().order('created_at', { ascending: false })
+    const { data, error } = await supabase.from('clipboard').select("id, content, is_pin, created_at").order('created_at', { ascending: false })
     if (error) {
         console.error('Error fetching clipboard data:', error)
     }
@@ -30,8 +30,9 @@ const pinClipData = async (id: string, status: boolean, pinClip: (id: string, st
     }
 }
 
-const appClipData = async (content: string, addClip: (data: any) => void) => {
-    const { data, error } = await supabase.from('clipboard').insert({ content: content }).select().single()
+const appClipData = async (content: string, addClip: (data: IClip) => void) => {
+    const user = userStore.getState().user
+    const { data, error } = await supabase.from('clipboard').insert({ content: content, user_id: user?.id }).select().single()
     if (error) {
         console.error('Error inserting clipboard data:', error)
     } else {
@@ -45,7 +46,7 @@ const getUserData = async () => {
         console.error('Error fetching user data:', error)
         return null
     }
-    return user
+    return user as IUser
 }
 
 export { getClipsData, deleteClipData, pinClipData, appClipData, getUserData }
