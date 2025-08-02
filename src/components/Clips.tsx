@@ -4,7 +4,7 @@ import { deleteClipData, pinClipData } from "@/services";
 import { clipStore } from "@/store";
 import { copyClipData } from "@/utils/CopyClip";
 import EmptyClip from "./EmptyClip";
-import { formatDate } from "@/utils/dateFormatter";
+import { formatDate } from "@/utils/dateFormat";
 
 export default function Clips() {
 
@@ -44,14 +44,14 @@ export default function Clips() {
                                             <div className='h-20'>
                                                 <p>{clip.content}</p>
                                             </div>  
-                                            <div className='flex justify-end gap-2'>
+                                            <div className='flex justify-end gap-2 '>
                                                 <button className='custom-btn' onClick={(e) => {
                                                     e.stopPropagation();
                                                     deleteClipData(clip.id, deleteClip)
                                                 }}>
                                                     <DeleteIcon />
                                                 </button>
-                                                <button className={`custom-btn ${clip.is_pin ? '!text-cyan-400' : ''}`} onClick={(e) => {
+                                                <button className={`custom-btn ${clip.is_pin ? '!text-amber-300' : ''}`} onClick={(e) => {
                                                     e.stopPropagation();
                                                     pinClipData(clip.id, clip.is_pin, pinClip)
                                                 }}>

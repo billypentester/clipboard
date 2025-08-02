@@ -1,29 +1,19 @@
 "use client"
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import GoogleProvider from '@/components/GoogleProvider'
-import { getSession, handleLogin } from '@/utils/auth'
+import { handleSignUp } from '@/utils/auth'
 
 export default function Home() {
   
   const [user, setUser] = useState<IUserCredentials>({ email: '', password: '' })
   const router = useRouter()
-  
-
-  useEffect(() => {
-    getSession().then((isLoggedIn) => {
-      if (isLoggedIn) {
-        router.push('/board')
-      }
-    })
-  }, [router])
-  
 
   return (
     <div className='h-screen flex items-center justify-center'>
       <form className='w-full lg:w-1/3 p-4 bg-gray-100 shadow-md text-center mx-3'>
-        <h2 className='my-5 text-2xl'>Welcome</h2>
+        <h2 className='my-5 text-2xl'>Create Account</h2>
         <div className='flex flex-col gap-3'>
           <input
             className='shadow-xs border border-gray-400 rounded-md w-full p-2'
@@ -41,12 +31,12 @@ export default function Home() {
             autoComplete="new-password"
           />
         </div>
-        <button className='mt-8 mb-3 shadow-md border rounded-md w-full bg-gray-800 text-white px-6 py-2 hover:cursor-pointer' onClick={(e)=> handleLogin(e, router, user)}>Log In</button>
+        <button className='mt-8 mb-4 shadow-md border rounded-md w-full bg-gray-800 text-white px-6 py-2 hover:cursor-pointer' onClick={(e)=> handleSignUp(e, router,user)}>Register</button>
         <span>or</span>
-        <GoogleProvider page="Log In" />
+        <GoogleProvider page="Sign Up" />
         <p className='text-sm text-gray-500 mt-5'>
-            Don't have an account? {" "}
-            <Link href="/signup" className='text-black hover:cursor-pointer'>Sign up</Link>
+            Already have an acccount ? {" "}
+            <Link href="/" className='text-black hover:cursor-pointer'>Login</Link>
         </p>
       </form>
     </div>

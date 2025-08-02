@@ -2,7 +2,7 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { clipStore, userStore } from '@/store'
-import { appClipData, getClipsData, getUserData } from '@/services'
+import { appClipData, getClipsData, getUserData, handlePaste } from '@/services'
 import Clips from '@/components/Clips'
 import Header from '@/components/Header'
 
@@ -26,22 +26,11 @@ export default function Board() {
             getClipsData(setClips)
         }
 
-        // TODO: Move this logic to a utility function
-        const handlePaste = async (event: KeyboardEvent) => {
-            if (event.ctrlKey && event.key === 'v') {
-                event.preventDefault()
-                const clipboardData = await navigator.clipboard.readText()
-                if (clipboardData) {
-                    appClipData(clipboardData, addClip)
-                }
-            }
-        }
-
         getUser()
 
-        document.addEventListener('keydown', handlePaste)
+        document.addEventListener('keydown', (event)=> handlePaste(event, addClip))
         return () => {
-            document.removeEventListener('keydown', handlePaste)
+            document.removeEventListener('keydown', (event)=> handlePaste(event, addClip))
         }
 
     }, [])
@@ -55,4 +44,3 @@ export default function Board() {
         </div>
     )
 }
-

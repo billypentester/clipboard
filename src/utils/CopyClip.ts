@@ -1,11 +1,20 @@
-export const copyClipData = async (
-  e: React.MouseEvent<HTMLDivElement>,
-  content: string
-) => {
+import { successToastConfig } from "@/config";
+import toast from "react-hot-toast";
+
+export const copyClipData = async (e: React.MouseEvent<HTMLDivElement>, content: string) => {
+  
+  animationRippleEffect(e);
+
+  await navigator.clipboard.writeText(content);
+  toast.success("Copied to clipboard!", successToastConfig)
+
+};
+
+const animationRippleEffect = (e: React.MouseEvent<HTMLDivElement>) => {
+
   const target = e.currentTarget;
   const rect = target.getBoundingClientRect();
 
-  // Calculate max distance to corners for full coverage
   const clickX = e.clientX - rect.left;
   const clickY = e.clientY - rect.top;
   const radius = Math.max(
@@ -26,5 +35,4 @@ export const copyClipData = async (
 
   ripple.addEventListener("animationend", () => ripple.remove());
 
-  await navigator.clipboard.writeText(content);
-};
+}

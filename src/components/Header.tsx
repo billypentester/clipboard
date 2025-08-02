@@ -3,23 +3,15 @@ import { clipStore, userStore } from '@/store'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/utils/supabaseClient'
 import { appClipData } from '@/services'
+import toast from 'react-hot-toast'
+import { errorToastConfig, successToastConfig } from '@/config'
+import { logoutUser } from '@/utils/auth'
 
 const Header = () => {
 
     const router = useRouter()
     const { addClip } = clipStore()
     const { clearUser } = userStore()
-
-    // TODO: Move this logic to a utility function
-    const logoutUser = async () => {
-        const { error } = await supabase.auth.signOut()
-        if (error) {
-            console.error('Error logging out:', error)
-        } else {
-            clearUser()
-            router.push('/')
-        }
-    }
 
     // TODO: Move this logic to a utility function
     function copyTextFromClipboard() {
@@ -51,7 +43,7 @@ const Header = () => {
                 </div>
                 <div className='flex-1'>
                     <div className='flex items-center justify-end space-x-4'>
-                        <button className='text-white hover:cursor-pointer px-5' onClick={logoutUser}>
+                        <button className='text-white hover:cursor-pointer px-5' onClick={() => logoutUser(router, clearUser)}>
                             <LogoutIcon />
                         </button>
                     </div>

@@ -29,3 +29,14 @@ interface IUserStore {
     setUser: (user: IUser) => void
     clearUser: () => void
 }
+
+interface IUserCredentials {
+    email: string
+    password: string 
+}
+
+interface ToastConfig {
+    icon: string;
+    position: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left' | 'top-center' | 'bottom-center';
+    style: React.CSSProperties;
+}
