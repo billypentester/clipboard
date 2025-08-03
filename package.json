@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@capacitor/cli": "^7.4.2",
     "@supabase/supabase-js": "^2.52.1",
     "next": "15.4.4",
     "react": "19.1.0",
