@@ -33,6 +33,16 @@ const pinClipData = async (id: string, status: boolean, pinClip: (id: string, st
     toast(`Clip ${!status ? "pinned" : "unpinned"}`, { ...successToastConfig, icon: '📌' })
 }
 
+const clearAllClipsData = async (clearClips: () => void) => {
+    const { error } = await supabase.from('clipboard').delete().eq('user_id', userStore.getState().user?.id)
+    if (error) {
+        toast(error.message, errorToastConfig)
+        return
+    }
+    clearClips()
+    toast('All clips cleared', { ...successToastConfig, icon: '🧹'})
+}
+
 const appClipData = async (content: string, addClip: (data: IClip) => void) => {
     const user = userStore.getState().user
     const { data, error } = await supabase.from('clipboard').insert({ content: content, user_id: user?.id }).select().single()
@@ -53,15 +63,4 @@ const getUserData = async () => {
     return user as IUser
 }
 
-const handlePaste = async (event: KeyboardEvent, addClip: (data: IClip) => void) => {
-    if (event.ctrlKey && event.key === 'v') {
-        event.preventDefault()
-        const clipboardData = await navigator.clipboard.readText()
-        // TODO: Toast is not working here, need to investigate
-        if (clipboardData) {
-            appClipData(clipboardData, addClip)
-        }
-    }
-}
-
-export { getClipsData, deleteClipData, pinClipData, appClipData, getUserData, handlePaste }
+export { getClipsData, deleteClipData, pinClipData, appClipData, getUserData, clearAllClipsData }

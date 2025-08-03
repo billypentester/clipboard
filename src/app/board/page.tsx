@@ -1,46 +1,61 @@
-"use client"
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { clipStore, userStore } from '@/store'
-import { appClipData, getClipsData, getUserData, handlePaste } from '@/services'
-import Clips from '@/components/Clips'
-import Header from '@/components/Header'
+"use client";
+import { DeleteIcon, PinIcon } from "@/icons"
+import { deleteClipData, pinClipData } from "@/services";
+import { clipStore } from "@/store";
+import EmptyClip from "@/components/EmptyClip";
+import { formatDate } from "@/utils/dateFormat";
+import { groupedData } from "@/utils/mapper";
+import { copyClipData } from "@/utils/clip";
 
+export default function Clips() {
 
-export default function Board() {
-  
-    const router = useRouter()
-    const { setClips, addClip } = clipStore()
-    const { setUser } = userStore()
+    const { clips, deleteClip, pinClip } = clipStore()
 
-    useEffect(() => {
-        
-        // TODO: Move this logic to a utility function
-        const getUser = async () => {
-            const userData: IUser | null = await getUserData()
-            if (!userData) {
-                router.push('/')
-                return
-            } 
-            setUser(userData)
-            getClipsData(setClips)
-        }
-
-        getUser()
-
-        document.addEventListener('keydown', (event)=> handlePaste(event, addClip))
-        return () => {
-            document.removeEventListener('keydown', (event)=> handlePaste(event, addClip))
-        }
-
-    }, [])
+    if(clips.length == 0) {
+        return (
+            <EmptyClip />
+        )
+    }
 
     return (
-        <div className='bg-gray-100'>
-            <div className='mx-auto w-full lg:w-2/3 pt-5 px-4'>
-                <Header />
-                <Clips />
-            </div>
-        </div>
+        <ul className="p-5">
+            {
+                groupedData(clips).map((clip: IGroupedClips, index: number) => {
+                    return (
+                        <li key={index} className="mb-10 lg:mt-20">
+                            <div className="mb-5">
+                                <h2 className='text-xl font-semibold'>{formatDate(clip.date)}</h2>
+                            </div>  
+                            {
+                                clip.clips.map((clip: OptionalClip, index: number) => {
+                                    return (
+                                        <div key={index} id={`clip-${index}`} className="relative cursor-pointer overflow-hidden shadow-xs border border-gray-300 rounded-md bg-gray-200 p-3 mb-3" onClick={(e) => copyClipData(e, clip.content)}>
+                                            <div className='h-20'>
+                                                <p>{clip.content}</p>
+                                            </div>  
+                                            <div className='flex justify-end gap-2'>
+                                                <button className='custom-btn' onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    deleteClipData(clip.id, deleteClip)
+                                                }}>
+                                                    <DeleteIcon className="h-5" />
+                                                </button>
+                                                <button className={`custom-btn ${clip.is_pin ? '!text-amber-300' : ''}`} onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    pinClipData(clip.id, clip.is_pin, pinClip)
+                                                }}>
+                                                    <PinIcon className="h-5" />
+                                                </button>
+                                            </div>
+                                        </div>      
+                                    )
+                                })
+                            }  
+                        </li>
+                    )
+                })
+            }
+        </ul>
     )
+
 }

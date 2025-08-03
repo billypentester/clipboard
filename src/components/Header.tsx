@@ -1,53 +1,61 @@
-import { AddIcon, LogoutIcon } from '@/icons'
+import { AddIcon, ClearIcon, ClipboardIcon, LogoutIcon, PinIcon, TimelineIcon } from '@/icons'
 import { clipStore, userStore } from '@/store'
 import { useRouter } from 'next/navigation'
-import { supabase } from '@/utils/supabaseClient'
-import { appClipData } from '@/services'
-import toast from 'react-hot-toast'
-import { errorToastConfig, successToastConfig } from '@/config'
 import { logoutUser } from '@/utils/auth'
+import { copyTextFromClipboard, swtichClipView } from '@/utils/clip'
+import { clearAllClipsData } from '@/services'
 
 const Header = () => {
 
     const router = useRouter()
-    const { addClip } = clipStore()
+    const { addClip, clearClips, clipView, setClipView } = clipStore()
     const { clearUser } = userStore()
 
-    // TODO: Move this logic to a utility function
-    function copyTextFromClipboard() {
-        navigator.clipboard.readText()
-            .then(text => {
-                if (text) {
-                    appClipData(text, addClip)
-                } else {
-                    console.warn('Clipboard is empty')
-                }
-            })
-            .catch(err => {
-                console.error('Failed to read clipboard contents: ', err)
-            })
-    }
-
     return (
-        <div className='bg-gray-800 p-4 text-white shadow-xl rounded-full mb-4'>
-            <div className='flex items-center'>
-                <div className='flex-1'>
-                    <div className='flex items-center justify-start space-x-4'>
-                        <button className='text-white hover:cursor-pointer px-5' onClick={() => copyTextFromClipboard()}>
-                            <AddIcon />
-                        </button>
-                    </div>
+        <div className='flex items-center justify-between'>
+            <div className='flex'>
+                <button 
+                    title='Clipboard'
+                    className='text-blue-500 hover:cursor-pointer' 
+                >
+                    <ClipboardIcon className="h-7" />
+                </button>
+            </div>
+            <div className='flex-auto'>
+                <div className='flex items-center justify-center space-x-7 lg:space-x-14'>
+                    <button 
+                        title='Add Clip'
+                        className='text-white hover:cursor-pointer' 
+                        onClick={() => copyTextFromClipboard(addClip)}
+                    >
+                        <AddIcon className="h-7" />
+                    </button>
+                    <button 
+                        title="Timeline View"
+                        className='text-white hover:cursor-pointer' 
+                        onClick={() => swtichClipView(clipView, setClipView, router)}
+                    >
+                        {
+                            clipView === "timeline" ? <TimelineIcon className="h-7" /> : <PinIcon className="h-7" />
+                        }
+                    </button>
+                    <button 
+                        title="Clear All"
+                        className='text-white hover:cursor-pointer' 
+                        onClick={() => clearAllClipsData(clearClips)}
+                    >
+                        <ClearIcon className="h-7" />
+                    </button>
                 </div>
-                <div className='flex-auto'>
-                    <h1 className='text-xl lg:text-2xl text-center'>Clipboard</h1>
-                </div>
-                <div className='flex-1'>
-                    <div className='flex items-center justify-end space-x-4'>
-                        <button className='text-white hover:cursor-pointer px-5' onClick={() => logoutUser(router, clearUser)}>
-                            <LogoutIcon />
-                        </button>
-                    </div>
-                </div>
+            </div>
+            <div className='flex'>
+                <button 
+                    title='Logout'
+                    className='text-red-500 hover:cursor-pointer' 
+                    onClick={() => logoutUser(router, clearUser)}
+                >
+                    <LogoutIcon className="h-7" />
+                </button>
             </div>
         </div>
     )

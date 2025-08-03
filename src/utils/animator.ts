@@ -1,16 +1,4 @@
-import { successToastConfig } from "@/config";
-import toast from "react-hot-toast";
-
-export const copyClipData = async (e: React.MouseEvent<HTMLDivElement>, content: string) => {
-  
-  animationRippleEffect(e);
-
-  await navigator.clipboard.writeText(content);
-  toast.success("Copied to clipboard!", successToastConfig)
-
-};
-
-const animationRippleEffect = (e: React.MouseEvent<HTMLDivElement>) => {
+export const animationRippleEffect = (e: React.MouseEvent<HTMLDivElement>) => {
 
   const target = e.currentTarget;
   const rect = target.getBoundingClientRect();

@@ -4,6 +4,9 @@ import { create } from 'zustand'
 const clipStore = create<IClipStore>((set) => ({
     clips: [],
     setClips: (clips: IClip[]) => set({ clips }),
+    clearClips: () => set({ clips: [] }),
+    clipView: 'timeline',
+    setClipView: (view: ClipView) => set({ clipView: view }),
     deleteClip: (id) =>
         set((state) => ({
             clips: state.clips.filter((clip) => clip.id !== id),

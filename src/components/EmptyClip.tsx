@@ -1,11 +1,14 @@
+import { ClipboardIcon } from '@/icons';
 import Image from 'next/image';
 
 export default function EmptyClip() {
   return (
-    <div className="text-center my-10 p-10">
-        <Image src="/images/clipboard-empty.png" alt="No Clips" width={200} height={200} className="mx-auto mb-5 w-1/5" />
-        <h2 className="text-2xl">No Clips Found</h2>
-        <p className="mt-3">Start adding clips to see them here.</p>
+    <div className="h-screen flex flex-col justify-center items-center">
+        <div className='flex flex-col justify-between items-center'>
+          <ClipboardIcon className="border-gray-300 border rounded-full p-3 h-24 mb-5 text-emerald-500" />
+          <h2 className="text-2xl text-gray-900">No Clips Found</h2>
+          <p className="text-gray-700">Start adding clips to see them here</p>
+        </div>
     </div>
   )
 }

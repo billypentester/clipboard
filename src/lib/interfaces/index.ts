@@ -18,6 +18,9 @@ interface IGroupedClips {
 
 interface IClipStore {
     clips: IClip[]
+    clipView: ClipView
+    setClipView: (view: ClipView) => void
+    clearClips: () => void
     setClips: (clips: IClip[]) => void
     deleteClip: (id: string) => void
     addClip: (clip: IClip) => void

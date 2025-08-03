@@ -2,38 +2,27 @@
 import { DeleteIcon, PinIcon } from "@/icons"
 import { deleteClipData, pinClipData } from "@/services";
 import { clipStore } from "@/store";
-import { copyClipData } from "@/utils/CopyClip";
-import EmptyClip from "./EmptyClip";
+import EmptyClip from "@/components/EmptyClip";
 import { formatDate } from "@/utils/dateFormat";
+import { pinnedData } from "@/utils/mapper";
+import { copyClipData } from "@/utils/clip";
 
 export default function Clips() {
 
     const { clips, deleteClip, pinClip } = clipStore()
 
-    if(clips.length == 0) {
+    if(pinnedData(clips).length == 0) {
         return (
             <EmptyClip />
         )
     }
 
-    // TODO: Move this logic to a utility function
-    const groupedData = clips.reduce((acc: IGroupedClips[], clip: IClip) => {
-        const date = new Date(clip.created_at).toLocaleDateString();
-        const existingGroup = acc.find((item) => item.date === date);
-        if (existingGroup) {
-            existingGroup.clips.push({ id: clip.id, content: clip.content, is_pin: clip.is_pin });
-        } else {
-            acc.push({ date: date, clips: [{ id: clip.id, content: clip.content, is_pin: clip.is_pin }] });
-        }
-        return acc;
-    }, []);
-
     return (
         <ul className="p-5">
             {
-                groupedData.map((clip: IGroupedClips, index: number) => {
+                pinnedData(clips).map((clip: IGroupedClips, index: number) => {
                     return (
-                        <li key={index} className="mb-10">
+                        <li key={index} className="mb-10 lg:mt-20">
                             <div className="mb-5">
                                 <h2 className='text-xl font-semibold'>{formatDate(clip.date)}</h2>
                             </div>  
@@ -44,18 +33,18 @@ export default function Clips() {
                                             <div className='h-20'>
                                                 <p>{clip.content}</p>
                                             </div>  
-                                            <div className='flex justify-end gap-2 '>
+                                            <div className='flex justify-end gap-2'>
                                                 <button className='custom-btn' onClick={(e) => {
                                                     e.stopPropagation();
                                                     deleteClipData(clip.id, deleteClip)
                                                 }}>
-                                                    <DeleteIcon />
+                                                    <DeleteIcon className="h-5" />
                                                 </button>
                                                 <button className={`custom-btn ${clip.is_pin ? '!text-amber-300' : ''}`} onClick={(e) => {
                                                     e.stopPropagation();
                                                     pinClipData(clip.id, clip.is_pin, pinClip)
                                                 }}>
-                                                    <PinIcon />
+                                                    <PinIcon className="h-5" />
                                                 </button>
                                             </div>
                                         </div>      

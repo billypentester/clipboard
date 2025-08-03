@@ -1,8 +1,7 @@
 import toast from "react-hot-toast"
 import { supabase } from "./supabaseClient"
 import { errorToastConfig, successToastConfig } from "@/config"
-
-// TODO: Predict router type
+import { getClipsData, getUserData } from "@/services"
 
 const handleSignUp = async (e: React.FormEvent, router: any, user: IUserCredentials) => {
     e.preventDefault()
@@ -41,6 +40,24 @@ async function handleGoogleLogin(e: React.FormEvent) {
     } 
 }
 
+const getUser = async (router: any, setUser: (data: any)=> void, setClips: any) => {
+    const userData: IUser | null = await getUserData()
+    if (!userData) {
+        router.push('/')
+        return
+    } 
+    setUser(userData)
+    getClipsData(setClips)
+}
+
+async function getSession() : Promise<boolean> {
+    let auth = await supabase.auth.getSession()
+    if(auth.data.session) {
+        return true
+    }
+    return false
+}
+
 const logoutUser = async (router: any, clearUser: ()=> void) => {
     const { error } = await supabase.auth.signOut()
     if (error) {
@@ -52,12 +69,4 @@ const logoutUser = async (router: any, clearUser: ()=> void) => {
     }
 }
 
-async function getSession() : Promise<boolean> {
-    let auth = await supabase.auth.getSession()
-    if(auth.data.session) {
-        return true
-    }
-    return false
-}
-
-export { getSession, handleSignUp, handleLogin, handleGoogleLogin, logoutUser }
+export { getSession, handleSignUp, handleLogin, handleGoogleLogin, logoutUser, getUser }
